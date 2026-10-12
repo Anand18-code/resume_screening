@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI Resume Screening & Fit Assessment System - Standalone Browser Client">
+  <title>AI Resume Screening & JD Fit Assessment System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    /* CSS identical to src/index.css */
+    :root {
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      --font-display: 'Outfit', var(--font-sans);
+      --bg-primary: #0b0f19;
+      --bg-secondary: #111827;
+      --bg-card: rgba(17, 24, 39, 0.75);
+      --bg-card-hover: rgba(30, 41, 59, 0.85);
+      --bg-glass: rgba(15, 23, 42, 0.65);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-focus: #6366f1;
+      --border-card: rgba(255, 255, 255, 0.12);
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --accent-primary: #6366f1;
+      --accent-cyan: #06b6d4;
+      --accent-gradient: linear-gradient(135deg, #6366f1 0%, #06b6d4 100%);
+      --accent-glow: 0 0 25px rgba(99, 102, 241, 0.35);
+      --success: #10b981;
+      --success-bg: rgba(16, 185, 129, 0.15);
+      --success-border: rgba(16, 185, 129, 0.35);
+      --warning: #f59e0b;
+      --warning-bg: rgba(245, 158, 11, 0.15);
+      --warning-border: rgba(245, 158, 11, 0.35);
+      --danger: #f43f5e;
+      --danger-bg: rgba(244, 63, 94, 0.15);
+      --danger-border: rgba(244, 63, 94, 0.35);
+      --info: #38bdf8;
+      --info-bg: rgba(56, 189, 248, 0.15);
+      --info-border: rgba(56, 189, 248, 0.35);
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --radius-full: 9999px;
+      --shadow-glass: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-primary);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(6, 182, 212, 0.1) 0px, transparent 50%),
+        radial-gradient(at 50% 50%, rgba(15, 23, 42, 0.8) 0px, transparent 100%);
+      background-attachment: fixed;
+      padding: 24px 20px 60px;
+    }
+    .app-container { max-width: 1400px; margin: 0 auto; }
+    h1, h2, h3, h4 { font-family: var(--font-display); font-weight: 700; color: #fff; }
+    .app-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 20px 28px; background: var(--bg-glass); backdrop-filter: blur(16px);
+      border: 1px solid var(--border-subtle); border-radius: var(--radius-xl);
+      margin-bottom: 32px; box-shadow: var(--shadow-glass);
+    }
+    .brand-section { display: flex; align-items: center; gap: 16px; }
+    .brand-icon {
+      width: 48px; height: 48px; background: var(--accent-gradient);
+      border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center;
+      box-shadow: var(--accent-glow);
+    }
+    .brand-title {
+      font-size: 1.5rem; font-weight: 800;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .brand-subtitle { font-size: 0.85rem; color: var(--text-secondary); }
+    .backend-status {
+      display: inline-flex; align-items: center; gap: 8px; padding: 6px 16px;
+      border-radius: var(--radius-full); font-size: 0.85rem; font-weight: 600;
+      background: var(--bg-card); border: 1px solid var(--border-subtle);
+    }
+    .status-dot { width: 9px; height: 9px; border-radius: 50%; }
+    .status-dot.online { background-color: var(--success); box-shadow: 0 0 10px var(--success); }
+    .status-dot.offline { background-color: var(--danger); box-shadow: 0 0 10px var(--danger); }
+    .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-bottom: 28px; }
+    @media (max-width: 960px) { .input-grid { grid-template-columns: 1fr; } }
+    .glass-card {
+      background: var(--bg-card); backdrop-filter: blur(12px);
+      border: 1px solid var(--border-card); border-radius: var(--radius-lg);
+      padding: 24px; box-shadow: var(--shadow-lg);
+    }
+    .card-title { font-size: 1.15rem; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; }
+    .card-description { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 18px; }
+    .mode-toggle { display: flex; background: rgba(0, 0, 0, 0.3); padding: 4px; border-radius: var(--radius-md); margin-bottom: 18px; border: 1px solid var(--border-subtle); }
+    .mode-btn { flex: 1; padding: 8px 14px; font-size: 0.85rem; font-weight: 600; border: none; background: transparent; color: var(--text-secondary); border-radius: var(--radius-sm); cursor: pointer; }
+    .mode-btn.active { background: var(--accent-primary); color: #fff; box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4); }
+    .dropzone {
+      border: 2px dashed rgba(99, 102, 241, 0.4); border-radius: var(--radius-md); padding: 36px 20px;
+      text-align: center; background: rgba(99, 102, 241, 0.03); cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 180px;
+    }
+    .file-preview { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 12px 16px; background: rgba(99, 102, 241, 0.15); border: 1px solid var(--border-focus); border-radius: var(--radius-md); }
+    .custom-textarea {
+      width: 100%; height: 180px; background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md); padding: 14px 16px; color: #fff; font-family: var(--font-sans); font-size: 0.9rem; resize: vertical; outline: none;
+    }
+    .preset-bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-bottom: 12px; }
+    .preset-chip { padding: 4px 10px; font-size: 0.78rem; font-weight: 500; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border-subtle); border-radius: var(--radius-full); color: var(--text-secondary); cursor: pointer; }
+    .preset-chip:hover { background: rgba(99, 102, 241, 0.2); border-color: var(--accent-primary); color: #fff; }
+    .action-section { display: flex; justify-content: center; margin: 10px 0 36px; }
+    .primary-btn {
+      background: var(--accent-gradient); color: #fff; font-family: var(--font-display); font-size: 1.1rem; font-weight: 700;
+      padding: 16px 48px; border-radius: var(--radius-full); border: none; cursor: pointer; box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4); display: flex; align-items: center; gap: 12px;
+    }
+    .alert-error { background: var(--danger-bg); border: 1px solid var(--danger-border); color: #fecdd3; padding: 14px 20px; border-radius: var(--radius-md); margin-bottom: 24px; }
+    .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-bottom: 30px; }
+    @media (max-width: 1024px) { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .kpi-grid { grid-template-columns: 1fr; } }
+    .kpi-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.9) 100%); border: 1px solid var(--border-card); border-radius: var(--radius-lg); padding: 20px; }
+    .kpi-label { font-size: 0.78rem; font-weight: 600; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 6px; }
+    .kpi-value { font-size: 1.75rem; font-weight: 800; font-family: var(--font-display); color: #fff; }
+    .kpi-sub { font-size: 0.8rem; color: var(--accent-cyan); }
+    .badge { display: inline-flex; align-items: center; padding: 5px 12px; border-radius: var(--radius-full); font-size: 0.82rem; font-weight: 600; margin: 3px 4px; }
+    .badge-matched { background: var(--success-bg); color: var(--success); border: 1px solid var(--success-border); }
+    .badge-missing { background: var(--danger-bg); color: var(--danger); border: 1px solid var(--danger-border); }
+    .badge-extra { background: var(--info-bg); color: var(--info); border: 1px solid var(--info-border); }
+    .badge-container { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+    .tabs-header { display: flex; gap: 8px; border-bottom: 1px solid var(--border-subtle); margin-bottom: 24px; overflow-x: auto; }
+    .tab-btn { padding: 10px 20px; font-size: 0.95rem; font-weight: 600; font-family: var(--font-display); color: var(--text-secondary); background: transparent; border: none; border-bottom: 2px solid transparent; cursor: pointer; }
+    .tab-btn.active { color: var(--accent-cyan); border-bottom-color: var(--accent-cyan); }
+    .custom-table { width: 100%; border-collapse: collapse; }
+    .custom-table th, .custom-table td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-subtle); font-size: 0.9rem; }
+    .custom-table th { color: var(--text-muted); font-size: 0.75rem; text-transform: uppercase; }
+    .rec-banner { padding: 18px 24px; border-radius: var(--radius-lg); margin-bottom: 24px; border: 1px solid; }
+    .rec-banner.Hire { background: var(--success-bg); border-color: var(--success-border); color: #d1fae5; }
+    .rec-banner.Review { background: var(--warning-bg); border-color: var(--warning-border); color: #fef3c7; }
+    .rec-banner.Reject { background: var(--danger-bg); border-color: var(--danger-border); color: #ffe4e6; }
+    .rec-title { font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; }
+    .insight-list { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+    .insight-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); font-size: 0.9rem; }
+    .insight-num { display: inline-flex; align-items: center; justify-content: center; min-width: 24px; height: 24px; background: var(--accent-primary); color: #fff; border-radius: 50%; font-size: 0.75rem; font-weight: 700; }
+    .spinner { width: 22px; height: 22px; border: 3px solid rgba(255, 255, 255, 0.3); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .progress-bar-bg { width: 100%; height: 8px; background: rgba(255, 255, 255, 0.1); border-radius: var(--radius-full); overflow: hidden; margin-top: 8px; }
+    .progress-bar-fill { height: 100%; border-radius: var(--radius-full); transition: width 0.8s ease; }
+    .app-footer { text-align: center; margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border-subtle); color: var(--text-muted); font-size: 0.8rem; }
+  </style>
+
+  <!-- React & Babel via CDN for 0-dependency instant browser execution -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+    const API_BASE_URL = 'http://127.0.0.1:8000';
+
+    function App() {
+      const [health, setHealth] = useState(null);
+      const [presets, setPresets] = useState({});
+      const [inputMode, setInputMode] = useState('pdf');
+      const [selectedFile, setSelectedFile] = useState(null);
+      const [pastedText, setPastedText] = useState('');
+      const [jobDescription, setJobDescription] = useState('');
+      const [isLoading, setIsLoading] = useState(false);
+      const [errorMessage, setErrorMessage] = useState('');
+      const [screeningData, setScreeningData] = useState(null);
+      const [activeTab, setActiveTab] = useState('overview');
+      const fileInputRef = useRef(null);
+
+      useEffect(() => {
+        // Fetch health
+        fetch(`${API_BASE_URL}/health`)
+          .then(res => res.json())
+          .then(data => setHealth(data))
+          .catch(() => setHealth({ status: 'offline' }));
+
+        // Fetch presets
+        fetch(`${API_BASE_URL}/api/sample-jds`)
+          .then(res => res.json())
+          .then(data => setPresets(data.presets || {}))
+          .catch(() => {});
+      }, []);
+
+      const handleAnalyze = async (e) => {
+        e.preventDefault();
+        setErrorMessage('');
+
+        if (inputMode === 'pdf' && !selectedFile) {
+          setErrorMessage('Please select a PDF resume file.');
+          return;
+        }
+        if (inputMode === 'text' && !pastedText.trim()) {
+          setErrorMessage('Please paste candidate resume text.');
+          return;
+        }
+
+        setIsLoading(true);
+
+        try {
+          let res;
+          if (inputMode === 'pdf' && selectedFile) {
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+            formData.append('job_description', jobDescription);
+            res = await fetch(`${API_BASE_URL}/api/upload-resume`, {
+              method: 'POST',
+              body: formData,
+            });
+          } else {
+            res = await fetch(`${API_BASE_URL}/api/screen-resume`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                resume_text: pastedText,
+                job_description: jobDescription,
+                filename: 'Candidate Resume.txt'
+              }),
+            });
+          }
+
+          if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.detail || `Server returned error (${res.status})`);
+          }
+
+          const data = await res.json();
+          setScreeningData(data);
+        } catch (err) {
+          setErrorMessage(err.message || 'Error occurred while contacting FastAPI backend.');
+        } finally {
+          setIsLoading(false);
+        }
+      };
+
+      const isOnline = health && health.status === 'healthy';
+
+      return (
+        <div className="app-container">
+          {/* Header */}
+          <header className="app-header">
+            <div className="brand-section">
+              <div className="brand-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2.2">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <polyline points="14 2 14 8 20 8"></polyline>
+                  <line x1="16" y1="13" x2="8" y2="13"></line>
+                  <line x1="16" y1="17" x2="8" y2="17"></line>
+                </svg>
+              </div>
+              <div>
+                <h1 className="brand-title">AI Resume Screening & Fit System</h1>
+                <p className="brand-subtitle">React + FastAPI Modern REST Architecture</p>
+              </div>
+            </div>
+
+            <div className="backend-status">
+              <span className={`status-dot ${isOnline ? 'online' : 'offline'}`}></span>
+              <span>{isOnline ? 'FastAPI Backend: Online' : 'FastAPI Backend: Connecting...'}</span>
+            </div>
+          </header>
+
+          {errorMessage && (
+            <div className="alert-error">{errorMessage}</div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleAnalyze}>
+            <div className="input-grid">
+              {/* Left: Resume */}
+              <div className="glass-card">
+                <div className="card-title">
+                  <h3>1. Candidate Resume</h3>
+                </div>
+                <p className="card-description">Upload PDF or paste raw text</p>
+                <div className="mode-toggle">
+                  <button
+                    type="button"
+                    className={`mode-btn ${inputMode === 'pdf' ? 'active' : ''}`}
+                    onClick={() => setInputMode('pdf')}
+                  >
+                    📄 Upload PDF
+                  </button>
+                  <button
+                    type="button"
+                    className={`mode-btn ${inputMode === 'text' ? 'active' : ''}`}
+                    onClick={() => setInputMode('text')}
+                  >
+                    ✏️ Paste Text
+                  </button>
+                </div>
+
+                {inputMode === 'pdf' ? (
+                  <div>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".pdf,application/pdf"
+                      style={{ display: 'none' }}
+                      onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) setSelectedFile(e.target.files[0]);
+                      }}
+                    />
+                    {!selectedFile ? (
+                      <div className="dropzone" onClick={() => fileInputRef.current.click()}>
+                        <div style={{ fontSize: '1.8rem', marginBottom: '8px' }}>📄</div>
+                        <div style={{ fontWeight: '600', color: '#fff' }}>Click to select PDF resume</div>
+                        <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Standard text PDF format</div>
+                      </div>
+                    ) : (
+                      <div className="file-preview">
+                        <div>
+                          <div style={{ fontWeight: '600', color: '#fff' }}>{selectedFile.name}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>{(selectedFile.size / 1024).toFixed(1)} KB</div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setSelectedFile(null)}
+                          style={{ background: 'rgba(244,63,94,0.2)', border: '1px solid rgba(244,63,94,0.4)', color: '#f43f5e', padding: '4px 8px', borderRadius: '4px', cursor: 'pointer' }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <textarea
+                    className="custom-textarea"
+                    placeholder="Paste candidate resume text here..."
+                    value={pastedText}
+                    onChange={(e) => setPastedText(e.target.value)}
+                  />
+                )}
+              </div>
+
+              {/* Right: Job Description */}
+              <div className="glass-card">
+                <div className="card-title">
+                  <h3>2. Target Job Description</h3>
+                </div>
+                <p className="card-description">Paste requirements or load a preset</p>
+                {Object.keys(presets).length > 0 && (
+                  <div className="preset-bar">
+                    <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: '600' }}>Templates:</span>
+                    {Object.keys(presets).map((k) => (
+                      <button
+                        key={k}
+                        type="button"
+                        className="preset-chip"
+                        onClick={() => setJobDescription(presets[k])}
+                      >
+                        {k}
+                      </button>
+                    ))}
+                  </div>
+                )}
+                <textarea
+                  className="custom-textarea"
+                  placeholder="Paste target job requirements and required skills..."
+                  value={jobDescription}
+                  onChange={(e) => setJobDescription(e.target.value)}
+                />
+              </div>
+            </div>
+
+            <div className="action-section">
+              <button type="submit" className="primary-btn" disabled={isLoading}>
+                {isLoading ? (
+                  <>
+                    <div className="spinner"></div>
+                    <span>Analyzing Resume & Matching Fit...</span>
+                  </>
+                ) : (
+                  <span>🚀 Analyze Resume & JD Match</span>
+                )}
+              </button>
+            </div>
+          </form>
+
+          {/* Results */}
+          {screeningData && (
+            <section style={{ marginTop: '20px' }}>
+              {/* 4 KPI Cards */}
+              <div className="kpi-grid">
+                <div className="kpi-card">
+                  <div className="kpi-label">Overall Match Score</div>
+                  <div className="kpi-value" style={{ color: screeningData.match_result.composite_score >= 70 ? '#10b981' : (screeningData.match_result.composite_score >= 45 ? '#f59e0b' : '#f43f5e') }}>
+                    {screeningData.match_result.composite_score}%
+                  </div>
+                  <div className="kpi-sub">{screeningData.match_result.grade}</div>
+                </div>
+
+                <div className="kpi-card">
+                  <div className="kpi-label">Skill Coverage</div>
+                  <div className="kpi-value">{screeningData.match_result.skill_score}%</div>
+                  <div className="kpi-sub">{screeningData.match_result.total_matched_skills} of {screeningData.match_result.total_required_skills} required skills</div>
+                </div>
+
+                <div className="kpi-card">
+                  <div className="kpi-label">Screening Recommendation</div>
+                  <div className="kpi-value" style={{ fontSize: '1.25rem', color: screeningData.hiring_decision.category === 'Hire' ? '#10b981' : (screeningData.hiring_decision.category === 'Review' ? '#f59e0b' : '#f43f5e') }}>
+                    {screeningData.hiring_decision.decision}
+                  </div>
+                  <div className="kpi-sub">Confidence: {screeningData.hiring_decision.confidence}%</div>
+                </div>
+
+                <div className="kpi-card">
+                  <div className="kpi-label">Candidate Domain</div>
+                  <div className="kpi-value" style={{ fontSize: '1.25rem' }}>{screeningData.predicted_category}</div>
+                  <div className="kpi-sub">NLP Domain Classifier</div>
+                </div>
+              </div>
+
+              {/* Tabs */}
+              <div className="tabs-header">
+                <button
+                  type="button"
+                  className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('overview')}
+                >
+                  📊 Fit Overview & Alignment
+                </button>
+                <button
+                  type="button"
+                  className={`tab-btn ${activeTab === 'skills' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('skills')}
+                >
+                  🧩 Skill Gap Analysis
+                </button>
+                <button
+                  type="button"
+                  className={`tab-btn ${activeTab === 'insights' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('insights')}
+                >
+                  💡 Recruiter Insights & Questions
+                </button>
+                <button
+                  type="button"
+                  className={`tab-btn ${activeTab === 'profile' ? 'active' : ''}`}
+                  onClick={() => setActiveTab('profile')}
+                >
+                  📄 Candidate Profile & Text
+                </button>
+              </div>
+
+              {/* Tab Views */}
+              {activeTab === 'overview' && (
+                <div>
+                  <div className={`rec-banner ${screeningData.hiring_decision.category}`}>
+                    <div className="rec-title">Status: {screeningData.hiring_decision.decision}</div>
+                    <div className="rec-reason"><strong>Rationale:</strong> {screeningData.hiring_decision.reason}</div>
+                  </div>
+                  <div className="glass-card">
+                    <h4 style={{ marginBottom: '12px' }}>Requirement Alignment Summary</h4>
+                    <table className="custom-table">
+                      <tbody>
+                        <tr><td><strong>Skills Matched</strong></td><td>{screeningData.match_result.total_matched_skills} / {screeningData.match_result.total_required_skills} required</td></tr>
+                        <tr><td><strong>Semantic Relevance</strong></td><td>{screeningData.match_result.semantic_score}% contextual overlap</td></tr>
+                        <tr><td><strong>Candidate Experience</strong></td><td>{screeningData.match_result.candidate_experience > 0 ? screeningData.match_result.candidate_experience + ' Year(s)' : '0 Years (Fresher)'}</td></tr>
+                        <tr><td><strong>Experience Fit</strong></td><td>{screeningData.match_result.experience_status}</td></tr>
+                        <tr><td><strong>Education Level</strong></td><td>{screeningData.match_result.candidate_education}</td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'skills' && (
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px' }}>
+                  <div className="glass-card">
+                    <h4 style={{ color: '#10b981' }}>✅ Matched Skills ({screeningData.match_result.matched_skills.length})</h4>
+                    <div className="badge-container">
+                      {screeningData.match_result.matched_skills.map(s => <span key={s} className="badge badge-matched">{s}</span>)}
+                    </div>
+                  </div>
+                  <div className="glass-card">
+                    <h4 style={{ color: '#f43f5e' }}>⚠️ Missing Required Skills ({screeningData.match_result.missing_skills.length})</h4>
+                    <div className="badge-container">
+                      {screeningData.match_result.missing_skills.map(s => <span key={s} className="badge badge-missing">{s}</span>)}
+                    </div>
+                  </div>
+                  <div className="glass-card">
+                    <h4 style={{ color: '#38bdf8' }}>💡 Additional Skills ({screeningData.match_result.extra_skills.length})</h4>
+                    <div className="badge-container">
+                      {screeningData.match_result.extra_skills.map(s => <span key={s} className="badge badge-extra">{s}</span>)}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'insights' && (
+                <div>
+                  <div className="glass-card" style={{ marginBottom: '16px' }}>
+                    <h4>🔍 Decision Factors Breakdown</h4>
+                    <ul className="insight-list" style={{ marginTop: '10px' }}>
+                      {screeningData.explainability.summary_reasons.map((r, i) => (
+                        <li key={i} className="insight-item">{r}</li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="glass-card" style={{ marginBottom: '16px' }}>
+                    <h4>🎯 Tailored Technical Screening Questions</h4>
+                    <ul className="insight-list" style={{ marginTop: '10px' }}>
+                      {screeningData.explainability.interview_questions.map((q, i) => (
+                        <li key={i} className="insight-item">
+                          <span className="insight-num">{i + 1}</span>
+                          <span>{q}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div className="glass-card">
+                    <h4>🚀 Candidate Resume Improvement Tips</h4>
+                    <ul className="insight-list" style={{ marginTop: '10px' }}>
+                      {screeningData.explainability.improvement_tips.map((t, i) => (
+                        <li key={i} className="insight-item">💡 {t}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'profile' && (
+                <div className="glass-card">
+                  <h4>Extracted Candidate Profile</h4>
+                  <table className="custom-table" style={{ marginTop: '12px' }}>
+                    <tbody>
+                      <tr><td><strong>Document Name</strong></td><td>{screeningData.document_name}</td></tr>
+                      <tr><td><strong>Total Detected Skills</strong></td><td>{screeningData.profile.skills.length} skills</td></tr>
+                      <tr><td><strong>Estimated Experience</strong></td><td>{screeningData.profile.experience_years > 0 ? screeningData.profile.experience_years + ' Year(s)' : '0 Years (Fresher)'}</td></tr>
+                      <tr><td><strong>Highest Education</strong></td><td>{screeningData.profile.education}</td></tr>
+                      <tr><td><strong>Certifications</strong></td><td>{screeningData.profile.certification}</td></tr>
+                      <tr><td><strong>Project Count</strong></td><td>{screeningData.profile.projects_count} Project(s)</td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </section>
+          )}
+
+          <footer className="app-footer">
+            AI Resume Screening & Fit Assessment System v2.5 • React + FastAPI Monorepo
+          </footer>
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+  </script>
+</body>
+</html>

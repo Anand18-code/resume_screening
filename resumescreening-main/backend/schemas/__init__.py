@@ -1,0 +1,41 @@
+"""Pydantic schemas for the FastAPI backend application."""
+
+from backend.schemas.resume import (
+    HealthResponse,
+    SkillExtractionRequest,
+    SkillExtractionResponse,
+    CandidateProfileSchema,
+    TextExtractRequest,
+    TextExtractResponse,
+    CategoryPredictionRequest,
+    CategoryPredictionResponse,
+    JobMatchRequest,
+    JobMatchResponse,
+    FeatureImpactSchema,
+    ExplainabilitySchema,
+    HiringDecisionSchema,
+    ScreeningRequest,
+    ScreeningResponse,
+    SampleJDItem,
+    SampleJDsResponse,
+)
+
+__all__ = [
+    "HealthResponse",
+    "SkillExtractionRequest",
+    "SkillExtractionResponse",
+    "CandidateProfileSchema",
+    "TextExtractRequest",
+    "TextExtractResponse",
+    "CategoryPredictionRequest",
+    "CategoryPredictionResponse",
+    "JobMatchRequest",
+    "JobMatchResponse",
+    "FeatureImpactSchema",
+    "ExplainabilitySchema",
+    "HiringDecisionSchema",
+    "ScreeningRequest",
+    "ScreeningResponse",
+    "SampleJDItem",
+    "SampleJDsResponse",
+]
